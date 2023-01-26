@@ -9,11 +9,23 @@ const searchTerm = document.querySelector(".searchTerm");
 // const queryString =
 //   "q=" + encodeURIComponent("GitHub Octocat in: readme user:defunkt");
 
+window.addEventListener("DOMContentLoaded", (e) => {
+  console.log("DOM ready");
+  fetch("https://api.github.com/zen")
+    .then((res) => res.text())
+    .then((message) => {
+      document.querySelector("h1").textContent = message;
+    });
+});
+
 btn1.addEventListener("click", (e) => {
-  fetch(url)
+  const val = searchTerm.value;
+  const queryString = url + "?q=" + encodeURIComponent(val);
+  console.log(queryString);
+  fetch(queryString)
     .then((res) => res.json())
     .then((data) => {
-      outputArray(data);
+      outputArray2(data);
     })
     .catch((error) => {
       console.log("Fetch Problem : " + error.message);
@@ -28,9 +40,22 @@ function outputArray(data) {
   });
 }
 
+function outputArray2(data) {
+  console.log(data.items);
+  if (data.items.length > 0) {
+    data.items.forEach((element) => {
+      outputContenttoPage(element);
+      output.innerHTML += "<hr>";
+    });
+  }
+}
+
 function outputContenttoPage(data) {
   console.log(data);
   //   let html = `${data.name}`;
-  let html = `${data["name"]}<br> ${data["id"]}<br> ${data["owner"]["id"]}<br> ${data["language"]}<br>`;
+  let html = `${data["name"]}<br> 
+  ${data["id"]}<br> 
+  ${data["owner"]["id"]}<br> 
+  <a href="${data["html_url"]}" target="_blank">${data["html_url"]}</a><br>`;
   output.innerHTML += html;
 }
